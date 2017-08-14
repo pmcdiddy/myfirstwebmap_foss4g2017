@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+  <html>
+    <head>
+      <title> My first Leaflet map </title>
+      <link rel="stylesheet" href="main.css"/>
+      <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
+
+    </head>
+  <body>
+    <H1>Example 1: Leaflet Map</H1>
+    <div id="map"></div>
+    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
+    <script>
+  //initialize the map         
+    var map = L.map('map').setView([35.915096, -79.047486], 8);
+  
+  //Create baselayer - tiles         
+    var backgroundMap = L.tileLayer('http://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',{
+      attribution: '<a href="http://openstreetmap.org">OpenStreetMap</a>contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
+      maxZoom: 19
+      }
+    );
+  
+  backgroundMap.addTo(map);
+  var work = L.marker([35.910970, -79.047859]).addTo(map);
+  var home = L.marker([35.924153, -79.016631]).addTo(map);
+  var VA_home = L.marker([36.914973, -76.298204]).addTo(map);
+  var VA_G_home = L.marker([36.936164, -76.212804]).addTo(map);
+  var born = L.marker([36.843971, -76.304559]).addTo(map);  
+  var brewery = L.marker([42.346868, -71.034396]).addTo(map);
+
+  var popup = "This is where I was born.";
+  born.bindPopup(popup);
+
+  var circle = L.circle([35.915096, -79.047486], 15000, {
+    color: 'black',
+    fillColor: '#ff7800',
+    fillOpacity: 0.23
+  }).addTo(map);
+
+  var polygon = L.polygon([
+    [35.910970, -79.047859],
+    [35.924153, -79.016631],
+    [36.914973, -76.298204],
+    [36.936164, -76.212804],
+    [36.843971, -76.304559]
+  ]).addTo(map);
+
+// Create a marker first
+var geojsonMarkerOptions = {
+  radius: 16,
+  fillColor: "#ff7800",
+  color: "#000",
+  weight: 1,
+  opacity: 1,
+  fillOpacity: 0.8
+};
+
+//create a empty geojson layer
+var geojson = L.geoJson(null,{
+  pointToLayer: function (geoJsonPoint, latlng) {
+    return L.circleMarker(latlng, geojsonMarkerOptions);
+  }
+}).addTo(map);
+
+// new Http Request
+var xhttp = new XMLHttpRequest();
+
+// set the request method and data file
+xhttp.open('GET', encodeURI("All_BFRO_Reports_points.geojson"));
+
+//specify what must be done with the geojson data to the layer when request is succesfull
+xhttp.onload = function() {
+  if (xhttp.readyState === 4) {
+      // add the json data to the geojson layer we created before!
+      geojson.addData(JSON.parse(xhttp.responseText));
+    } else {
+      alert('Request failed.  Returned status of ' + xhttp.status);
+    }
+};
+
+// send the request
+xhttp.send();
+  
+</script>
+  </body>
+</html>
